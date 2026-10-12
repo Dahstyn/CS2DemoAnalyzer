@@ -13,16 +13,27 @@
 
 body {
     margin: 0;
-    padding: 60px;
+    padding: 30px;
     background: var(--bg-main);
     color: var(--font);
     font-family: Arial, sans-serif;
 }
+.radar{
+   display: grid; 
+   grid-template-columns: 1fr 1fr;
+   grid-template-rows: auto auto 1fr;
+   grid-template-areas: 
+        "head head"
+        "radio combo"
+        "heatmap heatmap";
+}
+
+
 fieldset {
     display: flex;
     gap: 4px;
     padding: 4px;
-    width: auto;
+    width: fit-content;
     background: #20242b;
     border-radius: 10px;
     border-color: var(--border);
@@ -32,12 +43,12 @@ fieldset label:hover {
   background-color: var(--hover);
 }
 fieldset label{
-    flex: 1;
     border-radius: 10px;
+    padding: 2px;
 }
 .container {
     display: grid;
-    grid-template-columns:30% 40% 30%;
+    grid-template-columns:3fr 4fr 3fr;
     gap: 20px;
 }
 .container > div {
@@ -48,7 +59,18 @@ fieldset label{
     box-shadow: 0 6px 20px #0003;
     min-height: 10vh;
 }
-
+#h3hm{
+    grid-area: head;
+}
+#radiobox{
+    grid-area: radio;
+}
+#combobox{
+    grid-area: combo;
+}
+#HC{
+    grid-area: heatmap;
+}
 
 .container > div:first-child {
     grid-column: 1 / 4;
@@ -83,9 +105,9 @@ h1 {
     grid-row: 2;
     position: relative;
 }
-h2{
+h3{
     color: var(--font);
-    font-size: 32px;
+    font-size: 28px;
     text-align: center;
 }
 .footer{
