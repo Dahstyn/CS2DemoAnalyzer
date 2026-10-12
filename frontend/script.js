@@ -1,9 +1,13 @@
-const killHeatmapContainer = document.getElementById("killHC")
-const deathHeatmapContainer = document.getElementById("deathHC")
+const killHeatmapContainer = document.getElementById("killHC");
+const deathHeatmapContainer = document.getElementById("deathHC");
+const combobox = document.getElementById("combobox");
+const killRadioButton = document.getElementById("kill");
+const deathRadioButton = document.getElementById("death");
+let radar = document.getElementById("radar");
+let selectedPlayerId = "default";
 let killHeatmapInstance;
 let deathHeatmapInstance;
 let matchData = null;
-let radar = null;
 let config = {
     radius: 0,
     maxOpacity: 0.6,
@@ -22,15 +26,17 @@ fetch("http://localhost:8080/api/test")
     .then(data => {
         matchData = data;
         document.getElementById("map").textContent = `Map: ${data.map}`;
-        radar = document.getElementById("radar");
         
-        config.radius = calcRad(radar);
-        console.log(config.radius);
-        radar.onload = () => {
-            if(getActiveRadioButton().value == "victim"){
-                renderDeathHeatmap(data, radar, config);
-            }else {renderKillHeatmap(data, radar, config);}
-            
+        data.players.forEach(player =>{
+            const option = document.createElement("option");
+            option.value = player.id;
+            option.textContent = player.name;
+            combobox.add(option);
+        });
+
+        radar.onload = () => {    
+            config.radius = calcRad(radar);
+            updateHeatmap(); 
         };
         
         radar.src = `assets/radar/${data.map}.jpg`;
@@ -39,6 +45,11 @@ fetch("http://localhost:8080/api/test")
         console.error(error);
     });
 
+function updateHeatmap(){
+    if(getActiveRadioButton().value == "victim"){
+                renderDeathHeatmap(matchData, radar, config);
+            }else {renderKillHeatmap(matchData, radar, config);}
+}
 
 function renderKillHeatmap(data, radar, config){
     //Heatmap bereinigen
@@ -89,18 +100,20 @@ function createKillPoints(data, radar){
     const scaleX = radar.clientWidth / radar.naturalWidth;
     const scaleY = radar.clientHeight / radar.naturalHeight;
 
-    return data.kills.map(kill => ({
-        x: Math.round(kill.kposition.x * scaleX),
-        y: Math.round(kill.kposition.y * scaleY),
-        value: 1
-    }));
+    return data.kills
+        .filter(kill => selectedPlayerId === "default" || kill.killer.id == selectedPlayerId)
+        .map(kill => ({
+            x: Math.round(kill.kposition.x * scaleX),
+            y: Math.round(kill.kposition.y * scaleY),
+            value: 1
+        }));
 }
 
 function createDeathPoints(data, radar){
     const scaleX = radar.clientWidth / radar.naturalWidth;
     const scaleY = radar.clientHeight / radar.naturalHeight;
 
-    return data.kills.map(kill => ({
+    return data.kills.filter(kill => selectedPlayerId === "default" || kill.victim.id == selectedPlayerId).map(kill => ({
         x: Math.round(kill.vposition.x * scaleX),
         y: Math.round(kill.vposition.y * scaleY),
         value: 1
@@ -119,9 +132,6 @@ window.addEventListener("resize", () =>{
     }
 })
 
-const killRadioButton = document.getElementById("kill");
-const deathRadioButton = document.getElementById("death");
-
 killRadioButton.addEventListener('change', (event) => {
     if(event.target.checked){
         renderKillHeatmap(matchData, radar, config);
@@ -133,7 +143,10 @@ deathRadioButton.addEventListener('change', (event) => {
     }
 })
 
-
+combobox.addEventListener('change', () => {
+    selectedPlayerId = combobox.value
+    updateHeatmap();
+})
 
 
 function repaintKillHeatmap(killHeatmapInstance, data, radar){

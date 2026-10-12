@@ -11,33 +11,36 @@
                 <h1>CS2 Demo Analyzer</h1>
             </div>
             <div class="radar" id="heatmap">
-                <h2>Heatmap</h2>
-                <fieldset>
+                <h3 id="h3hm">Heatmap</h3>
+                <fieldset id="radiobox">
                     <label class="heatmap-option">
                         <input id="kill" type="radio" name="hm" value="killer" checked>
                         <span>Kills</span>
                     </label>
                     <label class="heatmap-option">
                         <input id="death" type="radio" name="hm" value="victim">
-                        <span>Tode</span>
+                        <span>Deaths</span>
                     </label>
                     <label class="heatmap-option">
                         <input id="hit" type="radio" name="hm" value="hitin">
-                        <span>Treffer</span>
+                        <span>Hits</span>
                     </label>
                     <label class="heatmap-option">
                         <input id="hurt" type="radio" name="hm" value="hurtin">
-                        <span>Getroffen</span>
+                        <span>Hurts</span>
                     </label>
                 </fieldset>
+                <select name="players" id="combobox">
+                    <option value="default">All Players</option>
+                </select>
                 <div id="HC">
-                    <div id="kill"></div>                    
-                    <div id="deathHC"></div>
+                    <div id="kill" class="notInUse"></div>                    
+                    <div id="deathHC" class="notInUse"></div>
                     <img id="radar" alt="Radarbild der Map">
                 </div>
             </div>
             <div id="matchData">
-                <h2>Match Data</h2>
+                <h3>Match Data</h3>
                 <p id="map"></p>
             </div>
             <div>
