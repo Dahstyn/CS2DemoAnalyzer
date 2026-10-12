@@ -1,0 +1,25 @@
+module cs2demoanalyzer
+
+go 1.27.1
+
+require (
+	github.com/golang/geo v0.0.0-20260818125358-b200a1149890
+	github.com/markus-wa/demoinfocs-golang/v5 v5.2.0
+	github.com/markus-wa/demoinfocs-golang/v6 v6.0.0-alpha.0
+	github.com/markus-wa/go-heatmap/v2 v2.0.0
+)
+
+require (
+	github.com/andygrunwald/vdf v1.1.0 // indirect
+	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/golang/snappy v1.0.0 // indirect
+	github.com/markus-wa/demoinfocs-golang v1.11.0 // indirect
+	github.com/markus-wa/go-unassert v0.1.3 // indirect
+	github.com/markus-wa/gobitread v0.2.5 // indirect
+	github.com/markus-wa/godispatch v1.4.1 // indirect
+	github.com/markus-wa/quickhull-go/v2 v2.2.0 // indirect
+	github.com/oklog/ulid/v2 v2.1.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/exp v0.0.0-20260908205506-85c1c2202aba // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
+)

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css">
+        <title>CS2 Demo Analyzer</title>
+    </head>
+    <body>
+        <div class="container">
+            <div>
+                <h1>CS2 Demo Analyzer</h1>
+            </div>
+            <div class="radar" id="heatmap">
+                <h2>Heatmap</h2>
+                <fieldset>
+                    <label class="heatmap-option">
+                        <input id="kill" type="radio" name="hm" value="killer" checked>
+                        <span>Kills</span>
+                    </label>
+                    <label class="heatmap-option">
+                        <input id="death" type="radio" name="hm" value="victim">
+                        <span>Tode</span>
+                    </label>
+                    <label class="heatmap-option">
+                        <input id="hit" type="radio" name="hm" value="hitin">
+                        <span>Treffer</span>
+                    </label>
+                    <label class="heatmap-option">
+                        <input id="hurt" type="radio" name="hm" value="hurtin">
+                        <span>Getroffen</span>
+                    </label>
+                </fieldset>
+                <div id="HC">
+                    <div id="kill"></div>                    
+                    <div id="deathHC"></div>
+                    <img id="radar" alt="Radarbild der Map">
+                </div>
+            </div>
+            <div id="matchData">
+                <h2>Match Data</h2>
+                <p id="map"></p>
+            </div>
+            <div>
+                
+            </div>
+            <div class="footer">
+                
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>
