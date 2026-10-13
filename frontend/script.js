@@ -1,5 +1,4 @@
-const killHeatmapContainer = document.getElementById("killHC");
-const deathHeatmapContainer = document.getElementById("deathHC");
+const hc = document.getElementById("HC");
 const combobox = document.getElementById("combobox");
 const killRadioButton = document.getElementById("kill");
 const deathRadioButton = document.getElementById("death");
@@ -10,13 +9,13 @@ let deathHeatmapInstance;
 let matchData = null;
 let config = {
     radius: 0,
-    maxOpacity: 0.6,
-    minOpacity: 0.05,
-    blur: 0.75,
+    maxOpacity: 0.8,
+    minOpacity: 0.1,
+    blur: 0.6,
     gradient: {
-        ".3": "blue",
-        ".6": "yellow",
-        ".8": "red"
+         "0.2": "#ff1900",
+        "0.6": "#ffa600",
+        "0.75": "#ffeebb",
     }
 };
             
@@ -64,11 +63,12 @@ function renderKillHeatmap(data, radar, config){
     //Heatmap erzeugen
     killHeatmapInstance = h337.create({
         ...config,
-        container: HC,
+        container: hc,
     });
 
     killHeatmapInstance.setData({
-        max: 3.5,
+        min: 0,
+        max: 2.5,
         data: points
     });  
 }
@@ -84,17 +84,18 @@ function renderDeathHeatmap(data, radar, config){
     //Heatmap erzeugen
     deathHeatmapInstance = h337.create({
         ...config,
-        container: HC,
+        container: hc,
     });
 
 
     deathHeatmapInstance.setData({
-        max: 3.5,
+        min: 0,
+        max: 2.5,
         data: points
     });  
 }
 function calcRad(radar){
-    return Math.min(20,Math.max(10, Math.round(radar.clientWidth * 0.025)))
+    return Math.max(5, Math.round(radar.clientWidth * 0.02));
 }
 function createKillPoints(data, radar){
     const scaleX = radar.clientWidth / radar.naturalWidth;
@@ -148,26 +149,31 @@ combobox.addEventListener('change', () => {
     updateHeatmap();
 })
 
+/*
 
 function repaintKillHeatmap(killHeatmapInstance, data, radar){
     killHeatmapInstance.configure({
-        radius: Math.max(8, Math.round(radar.clientWidth * 0.025)),
+        radius: calcRad(radar),
     })
     const points = createKillPoints(data, radar);
     killHeatmapInstance.setData({
-        max: 3.5,
+        min: 0,
+        max: 2.5,
         data: points
     });
     killHeatmapInstance.repaint();
 }
 function repaintDeathHeatmap(deathHeatmapInstance, data, radar){
     deathHeatmapInstance.configure({
-        radius: Math.max(8, Math.round(radar.clientWidth * 0.025)),
+        radius: calcRad(radar),
     })
     const points = createDeathPoints(data, radar);
     deathHeatmapInstance.setData({
-        max: 3.5,
+        min: 0,
+        max: 2.5,
         data: points
     });
     deathHeatmapInstance.repaint();
 }
+
+*/

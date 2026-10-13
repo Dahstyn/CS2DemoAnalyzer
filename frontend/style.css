@@ -1,9 +1,9 @@
 :root{
     --bg-main:#080d14;
     --bg-heatmap: #030303;
-    --border: #6b9aa0;
+    --border: #4c5279;
     --font: #8797ad;
-    --hover: #0e141d;
+    --hover: #002763;
     --container: #141e2b;
 }
 
@@ -20,12 +20,12 @@ body {
 }
 .radar{
    display: grid; 
-   grid-template-columns: 1fr 1fr;
+   grid-template-columns: 0.5fr 0.5fr 0.5fr 0.5fr;
    grid-template-rows: auto auto 1fr;
    grid-template-areas: 
-        "head head"
-        "radio combo"
-        "heatmap heatmap";
+        "head head head head"
+        "radio radio radio combo"
+        "heatmap heatmap heatmap heatmap";
 }
 
 
@@ -34,7 +34,7 @@ fieldset {
     gap: 4px;
     padding: 4px;
     width: fit-content;
-    background: #20242b;
+    background: var(--container);
     border-radius: 10px;
     border-color: var(--border);
 }
@@ -67,6 +67,22 @@ fieldset label{
 }
 #combobox{
     grid-area: combo;
+    background: var(--container);
+    color: var(--font);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px;
+}
+#combobox:hover{
+    background: var(--hover);
+    color: white;  
+}
+#combobox:focus-visible{
+    outline: 1px solid var(--border);
+}
+#combobox option {
+    background: var(--container);
+    color: var(--font);
 }
 #HC{
     grid-area: heatmap;
@@ -86,19 +102,6 @@ h1 {
     width: 100%;
     height: auto;
 }
-#heatmapContainer{
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1/1;
-    display: block;
-}
-#heatmapContainer canvas{
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100% !important;
-    height: 100% !important;
-}
 #heatmap{
     background-color:var(--bg-heatmap) ;
     grid-column: 2;
@@ -112,4 +115,33 @@ h3{
 }
 .footer{
     grid-column: 1 / 4;
+}
+
+.heatmap-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.heatmap-option input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.heatmap-option span {
+    display: block;
+    font-size: 15px;
+    padding: 8px 12px;
+    border-radius: 7px;
+}
+
+.heatmap-option:hover span {
+    background: var(--hover);
+    color: white;  
+}
+
+.heatmap-option input:checked + span {
+    background: var(--border);
+    color: var(--bg-main);
 }
