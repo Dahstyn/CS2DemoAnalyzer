@@ -21,13 +21,25 @@ func mapTeam(t common.Team) dto.Team {
 		return dto.TeamUnassigned
 	}
 }
+func mapPlayerEconomy(p *common.Player) dto.PlayerEconomy {
+	return dto.PlayerEconomy{
+		ID:    p.UserID,
+		Team:  mapTeam(p.Team),
+		Money: p.Money(),
+	}
+}
 
 // p.GetTeam() = nil abfangen
 func mapPlayer(p *common.Player) dto.Player {
 	return dto.Player{
 		ID:   p.UserID,
 		Name: p.Name,
-		//Team: mapTeam(p.GetTeam()),
+	}
+}
+func mapRoundStart(roundNumber int) dto.Round {
+	return dto.Round{
+		RoundNumber:   roundNumber,
+		PlayerEconomy: []dto.PlayerEconomy{},
 	}
 }
 

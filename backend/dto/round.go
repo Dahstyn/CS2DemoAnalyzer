@@ -1,7 +1,8 @@
 package dto
 
 type Round struct {
-	Winner         Team           `json:"winner"`
-	RoundEndReason RoundEndReason `json:"roundEndReason"`
-	MVP            Player         `json:"mvp"`
+	RoundNumber    int             `json:"roundNumber"`
+	PlayerEconomy  []PlayerEconomy `json:"playerEconomy"`
+	Winner         Team            `json:"winner"`
+	RoundEndReason RoundEndReason  `json:"roundEndReason"`
 }
