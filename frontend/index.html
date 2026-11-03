@@ -12,25 +12,25 @@
             </div>
             <div class="radar" id="heatmap">
                 <h3 id="h3hm">Heatmap</h3>
-                <fieldset id="radiobox">
-                    <label class="heatmap-option">
+                <fieldset id="heatmap-switcher">
+                    <label class="switch">
                         <input id="kill" type="radio" name="hm" value="killer" checked>
                         <span>Kills</span>
                     </label>
-                    <label class="heatmap-option">
+                    <label class="switch">
                         <input id="death" type="radio" name="hm" value="victim">
                         <span>Deaths</span>
                     </label>
-                    <label class="heatmap-option">
+                    <label class="switch">
                         <input id="hit" type="radio" name="hm" value="hitin">
                         <span>Hits</span>
                     </label>
-                    <label class="heatmap-option">
+                    <label class="switch">
                         <input id="hurt" type="radio" name="hm" value="hurtin">
                         <span>Hurts</span>
                     </label>
                 </fieldset>
-                <select name="players" id="combobox">
+                <select class="combobox" name="players" id="hmcombobox">
                     <option value="default">All Players</option>
                 </select>
                 <div id="HC">
@@ -45,9 +45,23 @@
                 
             </div>
             <div class="footer">
-                
+                <fieldset id="chart-switcher">
+                    <label class="switch">
+                        <input id="chart-ct-start" type="radio" name="cs" value="CT" checked>
+                        <span>CT</span>
+                    </label>
+                    <label class="switch">
+                        <input id="chart-t-start" type="radio" name="cs" value="T">
+                        <span>T</span>
+                    </label>
+                </fieldset>
+                <select class="combobox" name="players" id="chartcombobox">
+                    <option value="default">All Players</option>
+                </select>
+                <canvas id="chart"></canvas>
             </div>
         </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
         <script src="script.js"></script>
     </body>

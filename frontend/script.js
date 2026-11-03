@@ -1,11 +1,19 @@
 const hc = document.getElementById("HC");
-const combobox = document.getElementById("combobox");
+const hmcombobox = document.getElementById("hmcombobox");
+const chartcombobox = document.getElementById("chartcombobox");
 const killRadioButton = document.getElementById("kill");
 const deathRadioButton = document.getElementById("death");
+const chartSwitcherRadioButton = document.getElementById("chart-switcher");
+let startingTeamCT = [];
+let startingTeamT = [];
 let radar = document.getElementById("radar");
-let selectedPlayerId = "default";
+let money = 0;
+let selectedTeamOfChart = "CT";
+let chselectedPlayerId = "default";
+let hmselectedPlayerId = "default";
 let killHeatmapInstance;
 let deathHeatmapInstance;
+let moneyChart = null;
 let matchData = null;
 let config = {
     radius: 0,
@@ -30,19 +38,45 @@ fetch("http://localhost:8080/api/test")
             const option = document.createElement("option");
             option.value = player.id;
             option.textContent = player.name;
-            combobox.add(option);
+            hmcombobox.add(option);
+
+            if(player.startingteam == "CT"){
+                startingTeamCT.push(player);
+            }else if(player.startingteam == "T"){
+                startingTeamT.push(player);
+            }
         });
+        
+        fillComboboxByTeam(data);
+
 
         radar.onload = () => {    
             config.radius = calcRad(radar);
             updateHeatmap(); 
         };
-        
         radar.src = `assets/radar/${data.map}.jpg`;
+        showChart();
     })
     .catch(error => {
         console.error(error);
     });
+
+function fillComboboxByTeam(data){
+    if (selectedTeamOfChart === "CT" || selectedTeamOfChart === "T"){
+        data.players.filter(player => player.startingteam === selectedTeamOfChart).forEach(player =>{
+            const option = document.createElement("option");
+            option.value = player.id;
+            option.textContent = player.name;
+            chartcombobox.add(option);
+        });
+    }else{console.error}//Fehlerbehandlung hinzufügen
+}
+function emptyComboboxByTeam(data){
+    const playerOption = document.querySelectorAll('#chartcombobox option:not([value="default"])');
+    if (typeof playerOption !== "undefined" ){
+        playerOption.forEach(option => option.remove());
+    }
+}
 
 function updateHeatmap(){
     if(getActiveRadioButton().value == "victim"){
@@ -51,16 +85,13 @@ function updateHeatmap(){
 }
 
 function renderKillHeatmap(data, radar, config){
-    //Heatmap bereinigen
 
-    //document.getElementById("killHC").querySelector("canvas").remove();
-    const oldCanvases = document.querySelectorAll("canvas");
+    const oldCanvases = document.getElementById("HC").querySelectorAll("canvas");
     oldCanvases.forEach(canvas => canvas.remove());
 
     config.radius = calcRad(radar);
     const points = createKillPoints(data, radar);
 
-    //Heatmap erzeugen
     killHeatmapInstance = h337.create({
         ...config,
         container: hc,
@@ -74,14 +105,13 @@ function renderKillHeatmap(data, radar, config){
 }
 
 function renderDeathHeatmap(data, radar, config){
-    //Heatmap bereinigen
-    const oldCanvases = document.querySelectorAll("canvas");
+
+    const oldCanvases = document.getElementById("HC").querySelectorAll("canvas");
     oldCanvases.forEach(canvas => canvas.remove());
     
     config.radius = calcRad(radar);
     const points = createDeathPoints(data, radar);
 
-    //Heatmap erzeugen
     deathHeatmapInstance = h337.create({
         ...config,
         container: hc,
@@ -102,7 +132,7 @@ function createKillPoints(data, radar){
     const scaleY = radar.clientHeight / radar.naturalHeight;
 
     return data.kills
-        .filter(kill => selectedPlayerId === "default" || kill.killer.id == selectedPlayerId)
+        .filter(kill => hmselectedPlayerId === "default" || kill.killer.id == hmselectedPlayerId)
         .map(kill => ({
             x: Math.round(kill.kposition.x * scaleX),
             y: Math.round(kill.kposition.y * scaleY),
@@ -114,7 +144,7 @@ function createDeathPoints(data, radar){
     const scaleX = radar.clientWidth / radar.naturalWidth;
     const scaleY = radar.clientHeight / radar.naturalHeight;
 
-    return data.kills.filter(kill => selectedPlayerId === "default" || kill.victim.id == selectedPlayerId).map(kill => ({
+    return data.kills.filter(kill => hmselectedPlayerId === "default" || kill.victim.id == hmselectedPlayerId).map(kill => ({
         x: Math.round(kill.vposition.x * scaleX),
         y: Math.round(kill.vposition.y * scaleY),
         value: 1
@@ -123,6 +153,38 @@ function createDeathPoints(data, radar){
 
 function getActiveRadioButton(){
     return document.querySelector(`input[name=hm]:checked`)
+}
+
+function showChart(){
+    const rounds = matchData.rounds
+    const labels = rounds.map(round => round.roundNumber)
+    money = rounds.map(round => {
+        if (chselectedPlayerId === "default"){
+            return round.playerEconomy.filter(player => {
+                if(selectedTeamOfChart == "CT"){
+                    return startingTeamCT.some(p => player.id == p.id);
+                }else if (selectedTeamOfChart == "T"){
+                    return startingTeamT.some(p => player.id == p.id);
+                }
+            }).reduce((acc, currentValue) => acc + currentValue.money, 0,);
+    }else{
+        return round.playerEconomy.find(player => String(player.id) === String(chselectedPlayerId)).money;
+    }
+    })
+    if(moneyChart !== null){
+        moneyChart.destroy();
+    }
+    moneyChart = new Chart(document.getElementById("chart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Money at the start of every round",
+                data: money
+            }]
+
+        }
+    })
 }
 
 
@@ -144,36 +206,20 @@ deathRadioButton.addEventListener('change', (event) => {
     }
 })
 
-combobox.addEventListener('change', () => {
-    selectedPlayerId = combobox.value
+hmcombobox.addEventListener('change', () => {
+    hmselectedPlayerId = hmcombobox.value;
     updateHeatmap();
 })
 
-/*
+chartcombobox.addEventListener('change', () => {
+    chselectedPlayerId = chartcombobox.value;
+    showChart();
+})
 
-function repaintKillHeatmap(killHeatmapInstance, data, radar){
-    killHeatmapInstance.configure({
-        radius: calcRad(radar),
-    })
-    const points = createKillPoints(data, radar);
-    killHeatmapInstance.setData({
-        min: 0,
-        max: 2.5,
-        data: points
-    });
-    killHeatmapInstance.repaint();
-}
-function repaintDeathHeatmap(deathHeatmapInstance, data, radar){
-    deathHeatmapInstance.configure({
-        radius: calcRad(radar),
-    })
-    const points = createDeathPoints(data, radar);
-    deathHeatmapInstance.setData({
-        min: 0,
-        max: 2.5,
-        data: points
-    });
-    deathHeatmapInstance.repaint();
-}
-
-*/
+chartSwitcherRadioButton.addEventListener('change', (event) => {
+    selectedTeamOfChart = event.target.value;
+    emptyComboboxByTeam(matchData);
+    fillComboboxByTeam(matchData);
+    chselectedPlayerId = "default";
+    showChart();
+})
