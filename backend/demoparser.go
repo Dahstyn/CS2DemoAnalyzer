@@ -23,10 +23,26 @@ func addPlayer(p *common.Player, players *[]dto.Player) {
 	}
 	*players = append(*players, mapPlayer(p))
 }
+func addStartingTeam(round dto.Round, players []dto.Player) {
+	for _, economy := range round.PlayerEconomy {
+		for i := range players {
+			if players[i].ID == economy.ID {
+				players[i].StartingTeam = economy.Team
+				break
+			}
+		}
+	}
+}
+
+var matchData dto.MatchData
+var mapMetadata ex.Map
+var mapName string
+var kills []dto.Kill
+var players []dto.Player
+var rounds []dto.Round
+var roundNumber int = 0
 
 func parse(demoPath string) dto.MatchData {
-
-	var matchData dto.MatchData
 
 	file, err1 := os.Open(demoPath)
 	checkError(err1)
@@ -36,12 +52,6 @@ func parse(demoPath string) dto.MatchData {
 
 	defer parser.Close()
 
-	var mapMetadata ex.Map
-	var mapName string
-	var kills []dto.Kill
-	var players []dto.Player
-	var rounds []dto.Round
-	var roundNumber int = 0
 	parser.RegisterNetMessageHandler(func(message *msg.CSVCMsg_ServerInfo) {
 		mapMetadata = ex.GetMapMetadata(message.GetMapName())
 		mapName = message.GetMapName()
@@ -77,7 +87,11 @@ func parse(demoPath string) dto.MatchData {
 		for _, player := range parser.GameState().Participants().Playing() {
 			round.PlayerEconomy = append(round.PlayerEconomy, mapPlayerEconomy(player))
 		}
+		if roundNumber == 1 {
+			addStartingTeam(round, players)
+		}
 		rounds = append(rounds, round)
+
 	})
 	parser.RegisterEventHandler(func(re events.RoundEnd) {
 		rounds[roundNumber-1].Winner = mapTeam(re.Winner)
