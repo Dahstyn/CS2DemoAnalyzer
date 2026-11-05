@@ -1,6 +1,7 @@
 package dto
 
 type Kill struct {
+	HasKiller      bool   `json:"haskiller"`
 	Killer         Player `json:"killer"`
 	Victim         Player `json:"victim"`
 	KillerPosition Pos    `json:"kposition"`

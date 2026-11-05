@@ -31,6 +31,9 @@ func mapPlayerEconomy(p *common.Player) dto.PlayerEconomy {
 
 // p.GetTeam() = nil abfangen
 func mapPlayer(p *common.Player) dto.Player {
+	if p == nil {
+		return dto.Player{}
+	}
 	return dto.Player{
 		ID:   p.UserID,
 		Name: p.Name,
@@ -40,6 +43,19 @@ func mapRoundStart(roundNumber int) dto.Round {
 	return dto.Round{
 		RoundNumber:   roundNumber,
 		PlayerEconomy: []dto.PlayerEconomy{},
+	}
+}
+func mapScore(ctScore int, tScore int) dto.Score {
+	if ctScore+tScore < 13 {
+		return dto.Score{
+			TeamStartingCT: ctScore,
+			TeamStartingT:  tScore,
+		}
+	} else {
+		return dto.Score{
+			TeamStartingCT: tScore,
+			TeamStartingT:  ctScore,
+		}
 	}
 }
 

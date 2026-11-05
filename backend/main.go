@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	matchData := parse("demos/match730_003825413160924348771_1730406319_272.dem")
+	matchData := parse("demos/match730_003814157793250771270_1636709847_273.dem")
 
 	http.HandleFunc("/api/test", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

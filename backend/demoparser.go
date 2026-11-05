@@ -35,6 +35,8 @@ func addStartingTeam(round dto.Round, players []dto.Player) {
 }
 
 var matchData dto.MatchData
+var finalScore dto.Score
+var halftimeScore dto.Score
 var mapMetadata ex.Map
 var mapName string
 var kills []dto.Kill
@@ -56,14 +58,14 @@ func parse(demoPath string) dto.MatchData {
 		mapMetadata = ex.GetMapMetadata(message.GetMapName())
 		mapName = message.GetMapName()
 	})
-	//weiter befüllen + Teams der Spieler adden ohne overwrite
 	parser.RegisterEventHandler(func(event events.Kill) {
 		xk, yk := mapMetadata.TranslateScale(event.Killer.Position().X, event.Killer.Position().Y)
 		xv, yv := mapMetadata.TranslateScale(event.Victim.Position().X, event.Victim.Position().Y)
 
 		kill := dto.Kill{
-			Killer: mapPlayer(event.Killer),
-			Victim: mapPlayer(event.Victim),
+			HasKiller: event.Killer != nil,
+			Killer:    mapPlayer(event.Killer),
+			Victim:    mapPlayer(event.Victim),
 			KillerPosition: dto.Pos{
 				X: xk,
 				Y: yk,
@@ -72,6 +74,7 @@ func parse(demoPath string) dto.MatchData {
 				X: xv,
 				Y: yv,
 			},
+			Weapon: event.Weapon.String(),
 		}
 		kills = append(kills, kill)
 	})
@@ -83,6 +86,12 @@ func parse(demoPath string) dto.MatchData {
 
 	parser.RegisterEventHandler(func(rs events.RoundStart) {
 		roundNumber++
+		if roundNumber == 13 {
+			ctHalftimeScore := parser.GameState().TeamCounterTerrorists().Score()
+			tHalftimeScore := parser.GameState().TeamTerrorists().Score()
+			halftimeScore = mapScore(ctHalftimeScore, tHalftimeScore)
+
+		}
 		round := mapRoundStart(roundNumber)
 		for _, player := range parser.GameState().Participants().Playing() {
 			round.PlayerEconomy = append(round.PlayerEconomy, mapPlayerEconomy(player))
@@ -101,12 +110,16 @@ func parse(demoPath string) dto.MatchData {
 	err1 = parser.ParseToEnd()
 	checkError(err1)
 
-	//weiter befüllen
+	ctScore := parser.GameState().TeamCounterTerrorists().Score()
+	tScore := parser.GameState().TeamTerrorists().Score()
+	finalScore = mapScore(ctScore, tScore)
 	matchData = dto.MatchData{
-		Map:     mapName,
-		Players: players,
-		Kills:   kills,
-		Rounds:  rounds,
+		FinalScore:    finalScore,
+		HalftimeScore: halftimeScore,
+		Map:           mapName,
+		Players:       players,
+		Kills:         kills,
+		Rounds:        rounds,
 	}
 
 	return matchData
