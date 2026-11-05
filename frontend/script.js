@@ -32,8 +32,8 @@ fetch("http://localhost:8080/api/test")
         return res.json()})
     .then(data => {
         matchData = data;
-        document.getElementById("map").textContent = `Map: ${data.map}`;
-        
+        document.getElementById("mapData").innerHTML = `<img class="mapLogo" src="assets/mapLogos/map_icon_${data.map}.png" alt="mapLogo"> ${data.map.slice(3)}`;
+        document.getElementById("score").textContent = `Score ${data.finalScore.teamStartingCT} : ${data.finalScore.teamStartingT} (${data.halftimeScore.teamStartingT} : ${data.halftimeScore.teamStartingCT})`
         data.players.forEach(player =>{
             const option = document.createElement("option");
             option.value = player.id;

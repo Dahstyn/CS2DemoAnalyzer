@@ -23,9 +23,54 @@ body {
    grid-template-columns: 0.5fr 0.5fr 0.5fr 0.5fr;
    grid-template-rows: auto auto 1fr;
    grid-template-areas: 
-        "head head head head"
+        "head . . ."
         "radio radio radio combo"
         "heatmap heatmap heatmap heatmap";
+}
+
+#matchData{
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: var(--container);
+}
+#matchData::before{
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 50%, var(--container) 100% );
+}
+.bgimg{
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: blur(8px);
+    transform: scale(1.08);
+}
+#matchData > h3,
+#matchData > span {
+    position: relative;
+    z-index: 2;
+}
+.mapLogo{
+    height: 60px;
+}
+#mapData{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+    width: fit-content;
+    padding: 8px 16px;
+    text-transform: capitalize;
 }
 
 
@@ -141,9 +186,14 @@ h1 {
     position: relative;
 }
 h3{
+    display: inline-block;
     color: var(--font);
     font-size: 28px;
     text-align: center;
+    padding: 10px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 10px;
 }
 
 
