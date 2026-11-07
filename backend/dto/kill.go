@@ -9,4 +9,5 @@ type Kill struct {
 	Weapon         string `json:"weapon"`
 	Wallbang       bool   `json:"wallbang"`
 	KillerAirborne bool   `json:"kairborne"`
+	RoundNumber    int    `json:"roundNumber"`
 }

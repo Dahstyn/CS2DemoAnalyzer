@@ -74,7 +74,8 @@ func parse(demoPath string) dto.MatchData {
 				X: xv,
 				Y: yv,
 			},
-			Weapon: event.Weapon.String(),
+			Weapon:      event.Weapon.String(),
+			RoundNumber: parser.GameState().TotalRoundsPlayed() + 1,
 		}
 		kills = append(kills, kill)
 	})
