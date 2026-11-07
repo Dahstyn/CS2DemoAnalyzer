@@ -4,6 +4,7 @@ const chartcombobox = document.getElementById("chartcombobox");
 const killRadioButton = document.getElementById("kill");
 const deathRadioButton = document.getElementById("death");
 const chartSwitcherRadioButton = document.getElementById("chart-switcher");
+const killfeed = document.getElementById("killfeed");
 let startingTeamCT = [];
 let startingTeamT = [];
 let radar = document.getElementById("radar");
@@ -46,15 +47,16 @@ fetch("http://localhost:8080/api/test")
                 startingTeamT.push(player);
             }
         });
-        
         fillComboboxByTeam(data);
-
 
         radar.onload = () => {    
             config.radius = calcRad(radar);
             updateHeatmap(); 
         };
         radar.src = `assets/radar/${data.map}.jpg`;
+
+        renderKillfeed(data);
+
         showChart();
     })
     .catch(error => {
@@ -154,7 +156,53 @@ function createDeathPoints(data, radar){
 function getActiveRadioButton(){
     return document.querySelector(`input[name=hm]:checked`)
 }
+function renderKillfeed(data){
+    let currentRound = 1;
+    data.kills.forEach(kill => {
+        const killEvent = document.createElement("div");
+        const killer = document.createElement("span");
+        const weapon = document.createElement("span");
+        const victim = document.createElement("span");
+        if (kill.roundNumber !== currentRound){
+            currentRound = kill.roundNumber;
+            const newRound = document.createElement("p");
+            newRound.textContent = `Runde ${currentRound} beginnt`
+            killfeed.append(newRound);
+        }
+        if(kill.haskiller){ 
+            killer.textContent = `${kill.killer.name.slice(0,10)}`;
+        }else{ 
+            killer.textContent = `${kill.victim.name.slice(0,10)}`;
+        }
+        weapon.textContent = `${kill.weapon}`;
+        victim.textContent = `${kill.victim.name.slice(0,10)}`;
+        
+        if(startingTeamCT.find(p => p.id == kill.victim.id)){
+            victim.className = "ct"
+        }else if (startingTeamT.find(p => p.id == kill.victim.id)){
+            victim.className = "t"
+        }
+        if(kill.haskiller){
+            if(startingTeamCT.find(p => p.id == kill.killer.id)){
+                killer.className = "ct"
+            }else if (startingTeamT.find(p => p.id == kill.killer.id)){
+                killer.className = "t"
+            }
+        }else{
+            killer.className = victim.className
+        }
 
+        if(kill.roundNumber >= 13 && kill.roundNumber <= 27){
+            if(killer.className == "ct"){killer.className = "t"}
+            else if(killer.className == "t"){killer.className = "ct"}
+
+            if(victim.className == "ct"){victim.className = "t"}
+            else if(victim.className == "t"){victim.className = "ct"}
+        }
+        killEvent.append(killer, weapon, victim)
+        killfeed.append(killEvent);
+    })
+}
 function showChart(){
     const rounds = matchData.rounds
     const labels = rounds.map(round => round.roundNumber)
