@@ -138,6 +138,21 @@ fieldset label{
     box-shadow: 0 6px 20px #0003;
     min-height: 10vh;
 }
+#header{
+    display: flex;
+    gap: 20px;
+}
+#upload{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+#upload > *{
+    margin-bottom: 4px;
+}
+#upload > h2{
+    margin-bottom: 20px;
+}
 #h3hm{
     grid-area: head;
 }

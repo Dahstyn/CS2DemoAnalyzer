@@ -63,6 +63,47 @@ fetch("http://localhost:8080/api/test")
         console.error(error);
     });
 
+function displayMatch (data){
+    matchData = data;
+
+    //aufräumen alter Daten aus vorherigen Uploads
+    startingTeamCT = [];
+    startingTeamT = [];
+    hmcombobox.querySelectorAll('option:not([value="default"])').forEach(option => option.remove());
+    emptyComboboxByTeam();
+    hmselectedPlayerId = "default";
+    chselectedPlayerId = "default";
+    hmcombobox.value = "default";
+    chartcombobox.value = "default";
+    killfeed.replaceChildren();
+
+
+    document.getElementById("mapData").innerHTML = `<img class="mapLogo" src="assets/mapLogos/map_icon_${data.map}.png" alt="mapLogo"> ${data.map.slice(3)}`;
+    document.getElementById("score").textContent = `Score ${data.finalScore.teamStartingCT} : ${data.finalScore.teamStartingT} (${data.halftimeScore.teamStartingT} : ${data.halftimeScore.teamStartingCT})`
+    data.players.forEach(player =>{
+        const option = document.createElement("option");
+        option.value = player.id;
+        option.textContent = player.name;
+        hmcombobox.add(option);
+
+        if(player.startingteam == "CT"){
+            startingTeamCT.push(player);
+        }else if(player.startingteam == "T"){
+            startingTeamT.push(player);
+        }
+    });
+    fillComboboxByTeam(data);
+
+    radar.onload = () => {    
+        config.radius = calcRad(radar);
+        updateHeatmap(); 
+    };
+    radar.src = `assets/radar/${data.map}.jpg`;
+
+    renderKillfeed(data);
+
+    showChart();
+}
 function fillComboboxByTeam(data){
     if (selectedTeamOfChart === "CT" || selectedTeamOfChart === "T"){
         data.players.filter(player => player.startingteam === selectedTeamOfChart).forEach(player =>{
@@ -271,3 +312,43 @@ chartSwitcherRadioButton.addEventListener('change', (event) => {
     chselectedPlayerId = "default";
     showChart();
 })
+
+
+
+
+//Demodatei Upload
+const demoFileInput = document.getElementById("demofile");
+const uploadButton = document.getElementById("upload-button");
+
+
+uploadButton.addEventListener("click", async () => {
+    const file = demoFileInput.files[0];
+
+    if (!file) {
+        alert("Bitte wähle zuerst eine Demodatei aus.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("demo", file);
+
+    try {
+        const response = await fetch("http://localhost:8080/api/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error("Upload fehlgeschlagen.");
+        }
+
+        const data = await response.json();
+
+        console.log ("Länge json: ",data.players.length)
+
+        displayMatch(data)
+    } catch (error) {
+        console.error(error);
+        alert("Die Datei konnte nicht hochgeladen werden.");
+    }
+});
