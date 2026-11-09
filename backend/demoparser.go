@@ -34,17 +34,16 @@ func addStartingTeam(round dto.Round, players []dto.Player) {
 	}
 }
 
-var matchData dto.MatchData
-var finalScore dto.Score
-var halftimeScore dto.Score
-var mapMetadata ex.Map
-var mapName string
-var kills []dto.Kill
-var players []dto.Player
-var rounds []dto.Round
-var roundNumber int = 0
-
 func parse(demoPath string) dto.MatchData {
+	var matchData dto.MatchData
+	var finalScore dto.Score
+	var halftimeScore dto.Score
+	var mapMetadata ex.Map
+	var mapName string
+	var kills []dto.Kill
+	var players []dto.Player
+	var rounds []dto.Round
+	var roundNumber int = 0
 
 	file, err1 := os.Open(demoPath)
 	checkError(err1)
