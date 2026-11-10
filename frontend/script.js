@@ -27,41 +27,6 @@ let config = {
         "0.75": "#ffeebb",
     }
 };
-            
-fetch("http://localhost:8080/api/test")
-    .then(res => { if(!res.ok) throw new Error(`HTTP-Fehler: ${res.status}`);
-        return res.json()})
-    .then(data => {
-        matchData = data;
-        document.getElementById("mapData").innerHTML = `<img class="mapLogo" src="assets/mapLogos/map_icon_${data.map}.png" alt="mapLogo"> ${data.map.slice(3)}`;
-        document.getElementById("score").textContent = `Score ${data.finalScore.teamStartingCT} : ${data.finalScore.teamStartingT} (${data.halftimeScore.teamStartingT} : ${data.halftimeScore.teamStartingCT})`
-        data.players.forEach(player =>{
-            const option = document.createElement("option");
-            option.value = player.id;
-            option.textContent = player.name;
-            hmcombobox.add(option);
-
-            if(player.startingteam == "CT"){
-                startingTeamCT.push(player);
-            }else if(player.startingteam == "T"){
-                startingTeamT.push(player);
-            }
-        });
-        fillComboboxByTeam(data);
-
-        radar.onload = () => {    
-            config.radius = calcRad(radar);
-            updateHeatmap(); 
-        };
-        radar.src = `assets/radar/${data.map}.jpg`;
-
-        renderKillfeed(data);
-
-        showChart();
-    })
-    .catch(error => {
-        console.error(error);
-    });
 
 function displayMatch (data){
     matchData = data;
@@ -343,12 +308,15 @@ uploadButton.addEventListener("click", async () => {
         }
 
         const data = await response.json();
-
-        console.log ("Länge json: ",data.players.length)
-
-        displayMatch(data)
+        sessionStorage.setItem("matchData", JSON.stringify(data))
+        displayMatch(data) 
     } catch (error) {
         console.error(error);
         alert("Die Datei konnte nicht hochgeladen werden.");
     }
 });
+
+const savedMatchData = sessionStorage.getItem("matchData");
+if(savedMatchData !== null){
+    displayMatch(JSON.parse(savedMatchData))
+}
