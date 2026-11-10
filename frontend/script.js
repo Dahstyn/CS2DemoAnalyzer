@@ -30,7 +30,6 @@ let config = {
 
 function displayMatch (data){
     matchData = data;
-
     //aufräumen alter Daten aus vorherigen Uploads
     startingTeamCT = [];
     startingTeamT = [];
@@ -48,7 +47,7 @@ function displayMatch (data){
     data.players.forEach(player =>{
         const option = document.createElement("option");
         option.value = player.id;
-        option.textContent = player.name;
+        option.textContent = player.name.slice(0,10);
         hmcombobox.add(option);
 
         if(player.startingteam == "CT"){
@@ -74,7 +73,7 @@ function fillComboboxByTeam(data){
         data.players.filter(player => player.startingteam === selectedTeamOfChart).forEach(player =>{
             const option = document.createElement("option");
             option.value = player.id;
-            option.textContent = player.name;
+            option.textContent = player.name.slice(0,10);
             chartcombobox.add(option);
         });
     }else{console.error}//Fehlerbehandlung hinzufügen
