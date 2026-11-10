@@ -2,6 +2,7 @@ package main
 
 import (
 	"cs2demoanalyzer/dto"
+	"fmt"
 
 	"github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs/common"
 	"github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs/events"
@@ -35,8 +36,9 @@ func mapPlayer(p *common.Player) dto.Player {
 		return dto.Player{}
 	}
 	return dto.Player{
-		ID:   p.UserID,
-		Name: p.Name,
+		ID:        p.UserID,
+		Name:      p.Name,
+		SteamID64: fmt.Sprintf("https://steamcommunity.com/profiles/%d", p.SteamID64),
 	}
 }
 func mapRoundStart(roundNumber int) dto.Round {
