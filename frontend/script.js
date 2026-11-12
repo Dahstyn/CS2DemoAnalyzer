@@ -41,8 +41,13 @@ function displayMatch (data){
     chartcombobox.value = "default";
     killfeed.replaceChildren();
 
-
-    document.getElementById("mapData").innerHTML = `<img class="mapLogo" src="assets/mapLogos/map_icon_${data.map}.png" alt="mapLogo"> ${data.map.slice(3)}`;
+    const mapData = document.getElementById("map-data");
+    const mapLogo = document.createElement("img");
+    mapLogo.className = ("mapLogo");
+    mapLogo.src = (`assets/mapLogos/map_icon_${data.map}.png`);
+    mapLogo.alt = ("Map Logo");
+    mapData.replaceChildren(mapLogo, `${data.map.slice(3)}`);
+   
     document.getElementById("score").textContent = `Score ${data.finalScore.teamStartingCT} : ${data.finalScore.teamStartingT} (${data.halftimeScore.teamStartingT} : ${data.halftimeScore.teamStartingCT})`
     data.players.forEach(player =>{
         const option = document.createElement("option");
@@ -228,7 +233,7 @@ function showChart(){
         moneyChart.destroy();
     }
     moneyChart = new Chart(document.getElementById("chart"), {
-        type: "line",
+        type: "bar",
         data: {
             labels: labels,
             datasets: [{
@@ -283,20 +288,34 @@ chartSwitcherRadioButton.addEventListener('change', (event) => {
 //Demodatei Upload
 const demoFileInput = document.getElementById("demofile");
 const uploadButton = document.getElementById("upload-button");
+const fileName = document.getElementById("file-name");
+const loader = document.querySelector(".loader");
+const container = document.querySelector(".container");
+const upload = document.getElementById("upload");
+const newDemo = document.getElementById("new-demo");
 
+demoFileInput.addEventListener("change", () => {
+    fileName.textContent =
+        demoFileInput.files[0]?.name ?? "No file selected";
+});
 
 uploadButton.addEventListener("click", async () => {
     const file = demoFileInput.files[0];
 
     if (!file) {
-        alert("Bitte wähle zuerst eine Demodatei aus.");
+        alert("Please select a demo file.");
         return;
     }
+    loader.hidden = false;
+    uploadButton.disabled = true;
 
-    const formData = new FormData();
-    formData.append("demo", file);
+    
 
     try {
+
+        const formData = new FormData();
+        formData.append("demo", file);
+
         const response = await fetch("http://localhost:8080/api/upload", {
             method: "POST",
             body: formData
@@ -312,6 +331,12 @@ uploadButton.addEventListener("click", async () => {
     } catch (error) {
         console.error(error);
         alert("Die Datei konnte nicht hochgeladen werden.");
+    }finally{
+        loader.hidden = true;
+        uploadButton.disabled = false;
+        container.hidden = false;
+        upload.hidden = true;
+        newDemo.hidden = false; 
     }
 });
 
@@ -319,3 +344,9 @@ const savedMatchData = sessionStorage.getItem("matchData");
 if(savedMatchData !== null){
     displayMatch(JSON.parse(savedMatchData))
 }
+
+newDemo.addEventListener('click', (event) => {
+    container.hidden = true;
+    upload.hidden = false;
+    newDemo.hidden = true;
+})

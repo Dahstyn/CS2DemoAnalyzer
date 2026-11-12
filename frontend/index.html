@@ -5,21 +5,30 @@
         <link rel="stylesheet" href="style.css">
         <title>CS2 Demo Analyzer</title>
     </head>
+    <header class="header">
+        <span class="header-name">CS2 Demo Analyzer</span>
+    </header>
     <body>
-        <div class="container">
-            <div id="header">
-                <h1>CS2 Demo Analyzer</h1>
-                <section id="upload">
-                    <h2>Demodatei hochladen</h2>
-                    <label for="demofile">Demodatei auswählen</label>
-                    <input type="file" id="demofile" accept=".dem">
-                    <button type="button" id="upload-button">Datei hochladen</button>
-                </section>
-            </div>
+        <div>
+            <section id="upload">
+                <span class="upload-info"> CS2 Demo Analysis</span>
+                <h2>Analysiere eine Demodatei</h2>
+                <p>Lade eine Demodatei hoch um Heatmaps, Graphen und weiteres automatisch aus deiner Demodatei generieren zu lassen</p>    
+                <input type="file" id="demofile" accept=".dem">
+                <button type="button" id="upload-button">Analyse starten</button>
+            </section>
+        </div>
+        <div class="loader" hidden>
+                
+        </div>
+        <div>
+            <button id="new-demo" hidden>Analyse another demo</button>
+        </div>
+        <div class="container" hidden>
             <div id="matchData">
                 <img class="bgimg" src="assets/background/Screenshot 2026-11-04 112440.png" alt="mapBackground">
                 <h3>Match Data</h3>
-                <h3 id="mapData"></h3> 
+                <h3 id="map-data"></h3> 
                 <h3 id="score">Score </h3>
             </div>
             <div class="radar" id="heatmap">
@@ -48,11 +57,11 @@
                 <fieldset id="chart-switcher">
                     <label class="switch">
                         <input id="chart-ct-start" type="radio" name="cs" value="CT" checked>
-                        <span>CT</span>
+                        <span>Team 1</span>
                     </label>
                     <label class="switch">
                         <input id="chart-t-start" type="radio" name="cs" value="T">
-                        <span>T</span>
+                        <span>Team 2</span>
                     </label>
                 </fieldset>
                 <select class="combobox" name="players" id="chartcombobox">
