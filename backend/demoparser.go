@@ -11,18 +11,6 @@ import (
 	msg "github.com/markus-wa/demoinfocs-golang/v6/pkg/demoinfocs/msg"
 )
 
-// noch nicht in Benutzung
-func addPlayer(p *common.Player, players *[]dto.Player) {
-	if p == nil {
-		return
-	}
-	for _, player := range *players {
-		if player.ID == p.UserID {
-			return
-		}
-	}
-	*players = append(*players, mapPlayer(p))
-}
 func addStartingTeam(round dto.Round, players []dto.Player) {
 	for _, economy := range round.PlayerEconomy {
 		for i := range players {
@@ -30,6 +18,39 @@ func addStartingTeam(round dto.Round, players []dto.Player) {
 				players[i].StartingTeam = economy.Team
 				break
 			}
+		}
+	}
+}
+func updatePlayerStats(players []dto.Player, participants []*common.Player, roundNumber int, headshotkills [10]int) {
+	for _, p := range participants {
+		for i := range players {
+			if p != nil && p.Entity != nil {
+				if p.UserID == players[i].ID {
+					var kd float32
+					var hsp float32 = 0
+					if p.Kills() > 0 {
+						hsp = float32(headshotkills[p.UserID]) / float32(p.Kills()) * 100
+					}
+
+					if p.Deaths() > 0 {
+						kd = float32(p.Kills()) / float32(p.Deaths())
+					} else {
+						kd = float32(p.Kills())
+					}
+					players[i].Stats = &dto.Stats{
+						Kills:         p.Kills(),
+						Deaths:        p.Deaths(),
+						Assists:       p.Assists(),
+						Damage:        p.TotalDamage(),
+						UtilityDamage: p.UtilityDamage(),
+						MVPs:          p.MVPs(),
+						ADR:           float32(p.TotalDamage()) / float32(roundNumber),
+						KD:            kd,
+						HSPercentage:  hsp,
+					}
+				}
+			}
+
 		}
 	}
 }
@@ -43,8 +64,8 @@ func parse(demoPath string) dto.MatchData {
 	var kills []dto.Kill
 	var players []dto.Player
 	var rounds []dto.Round
-	var roundNumber int = 0
-
+	var roundNumber int = 0 // Durch parser.GameState().TotalRoundsPlayed() ersetzen
+	var headshotKills [10]int
 	file, err1 := os.Open(demoPath)
 	checkError(err1)
 	defer file.Close()
@@ -58,6 +79,10 @@ func parse(demoPath string) dto.MatchData {
 		mapName = message.GetMapName()
 	})
 	parser.RegisterEventHandler(func(event events.Kill) {
+		if event.Killer != nil && event.IsHeadshot {
+			headshotKills[event.Killer.UserID]++
+
+		}
 		xk, yk := mapMetadata.TranslateScale(event.Killer.Position().X, event.Killer.Position().Y)
 		xv, yv := mapMetadata.TranslateScale(event.Victim.Position().X, event.Victim.Position().Y)
 
@@ -85,6 +110,8 @@ func parse(demoPath string) dto.MatchData {
 	})
 
 	parser.RegisterEventHandler(func(rs events.RoundStart) {
+		//Durch parser.GameState().TotalRoundsPlayed() ersetzen
+
 		roundNumber++
 		if roundNumber == 13 {
 			ctHalftimeScore := parser.GameState().TeamCounterTerrorists().Score()
@@ -105,8 +132,14 @@ func parse(demoPath string) dto.MatchData {
 	parser.RegisterEventHandler(func(re events.RoundEnd) {
 		rounds[roundNumber-1].Winner = mapTeam(re.Winner)
 		rounds[roundNumber-1].RoundEndReason = mapRoundEndReason(re.Reason)
+
 	})
 
+	parser.RegisterEventHandler(func(e events.AnnouncementWinPanelMatch) {
+		roundNr := parser.GameState().TotalRoundsPlayed() + 1
+		updatePlayerStats(players, parser.GameState().Participants().All(), roundNr, headshotKills)
+
+	})
 	err1 = parser.ParseToEnd()
 	checkError(err1)
 

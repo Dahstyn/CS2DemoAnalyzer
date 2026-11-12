@@ -5,4 +5,5 @@ type Player struct {
 	Name         string `json:"name"`
 	StartingTeam Team   `json:"startingteam"`
 	SteamID64    string `json:"steamid64"`
+	Stats        *Stats `json:"stats,omitempty"`
 }
