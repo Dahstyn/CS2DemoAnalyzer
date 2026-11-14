@@ -46,6 +46,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Zieldatei konnte nicht erstellt werden", http.StatusInternalServerError)
 		return
 	}
+	defer os.Remove(targetFile.Name())
 
 	_, copyErr := io.Copy(targetFile, file)
 	closeErr := targetFile.Close()
@@ -58,6 +59,7 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(parsedMatchData)
+
 }
 
 //de_inferno.jpg demos/match730_003811723246873608264_0837777596_271.dem
