@@ -247,7 +247,7 @@ function showChart(){
 
 
 window.addEventListener("resize", () =>{
-    const radar = document.getElementById("radar");
+    
     if(radar.complete){
         radar.dispatchEvent(new Event("load"))
     }
@@ -288,16 +288,13 @@ chartSwitcherRadioButton.addEventListener('change', (event) => {
 //Demodatei Upload
 const demoFileInput = document.getElementById("demofile");
 const uploadButton = document.getElementById("upload-button");
-const fileName = document.getElementById("file-name");
 const loader = document.querySelector(".loader");
 const container = document.querySelector(".container");
 const upload = document.getElementById("upload");
 const newDemo = document.getElementById("new-demo");
+const navbar = document.getElementById("navbar");
 
-demoFileInput.addEventListener("change", () => {
-    fileName.textContent =
-        demoFileInput.files[0]?.name ?? "No file selected";
-});
+
 
 uploadButton.addEventListener("click", async () => {
     const file = demoFileInput.files[0];
@@ -326,17 +323,18 @@ uploadButton.addEventListener("click", async () => {
         }
 
         const data = await response.json();
-        sessionStorage.setItem("matchData", JSON.stringify(data))
-        displayMatch(data) 
+        sessionStorage.setItem("matchData", JSON.stringify(data));
+        displayMatch(data);
+        container.hidden = false;
+        upload.hidden = true;
+        newDemo.hidden = false; 
+        navbar.hidden = false;
     } catch (error) {
         console.error(error);
         alert("Die Datei konnte nicht hochgeladen werden.");
     }finally{
         loader.hidden = true;
         uploadButton.disabled = false;
-        container.hidden = false;
-        upload.hidden = true;
-        newDemo.hidden = false; 
     }
 });
 
@@ -346,7 +344,21 @@ if(savedMatchData !== null){
 }
 
 newDemo.addEventListener('click', (event) => {
+    showPage("heatmap")
     container.hidden = true;
     upload.hidden = false;
     newDemo.hidden = true;
+    navbar.hidden = true
+})
+
+function showPage(id){
+    document.querySelectorAll(".page").forEach(page => {
+        page.hidden = page.id !== id;
+    });
+}
+navbar.addEventListener('click', event => {
+    const button = event.target.closest("button[data-page]");
+    if(!button) return;
+    
+    showPage(button.dataset.page);
 })

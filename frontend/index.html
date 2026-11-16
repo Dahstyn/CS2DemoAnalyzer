@@ -5,71 +5,82 @@
         <link rel="stylesheet" href="style.css">
         <title>CS2 Demo Analyzer</title>
     </head>
-    <header class="header">
-        <span class="header-name">CS2 Demo Analyzer</span>
-    </header>
     <body>
-        <div>
-            <section id="upload">
-                <span class="upload-info"> CS2 Demo Analysis</span>
-                <h2>Analysiere eine Demodatei</h2>
-                <p>Lade eine Demodatei hoch um Heatmaps, Graphen und weiteres automatisch aus deiner Demodatei generieren zu lassen</p>    
-                <input type="file" id="demofile" accept=".dem">
-                <button type="button" id="upload-button">Analyse starten</button>
-            </section>
-        </div>
-        <div class="loader" hidden>
+        <header class="header">
+            <span class="header-name">CS2 Demo Analyzer</span>
+        </header>
+        <main>
+            <div>
+                <section id="upload">
+                    <span class="upload-info"> CS2 Demo Analysis</span>
+                    <h2>Analysiere eine Demodatei</h2>
+                    <p>Lade eine Demodatei hoch um Heatmaps, Graphen und weiteres automatisch aus deiner Demodatei generieren zu lassen</p>    
+                    <input type="file" id="demofile" accept=".dem">
+                    <button type="button" id="upload-button">Analyse starten</button>
+                </section>
+            </div>
+            <div class="loader" hidden>
                 
-        </div>
-        <div>
-            <button id="new-demo" hidden>Analyse another demo</button>
-        </div>
-        <div class="container" hidden>
-            <div id="matchData">
-                <img class="bgimg" src="assets/background/Screenshot 2026-11-04 112440.png" alt="mapBackground">
-                <h3>Match Data</h3>
-                <h3 id="map-data"></h3> 
-                <h3 id="score">Score </h3>
             </div>
-            <div class="radar" id="heatmap">
-                <h3 id="h3hm">Heatmap</h3>
-                <fieldset id="heatmap-switcher">
-                    <label class="switch">
-                        <input id="kill" type="radio" name="hm" value="killer" checked>
-                        <span>Kills</span>
-                    </label>
-                    <label class="switch">
-                        <input id="death" type="radio" name="hm" value="victim">
-                        <span>Deaths</span>
-                    </label>
-                </fieldset>
-                <select class="combobox" name="players" id="hmcombobox">
-                    <option value="default">All Players</option>
-                </select>
-                <div id="HC">
-                    <img id="radar" alt="Radarbild der Map">
-                </div>
+            <nav id="navbar" hidden>
+                <button data-page="stats">Statistiken</button>
+                <button data-page="heatmap">Heatmap</button>                
+                <button data-page="killfeed">Killfeed</button>
+                <button data-page="economy">Geldübersicht</button>
+            </nav>
+            <div>
+                <button id="new-demo" hidden>Analyse another demo</button>
             </div>
-            <div id="killfeed">
-                <h3>Killfeed</h3>
+            <div class="container" hidden>
+                <section id="matchData">
+                    <img class="bgimg" src="assets/background/Screenshot 2026-11-04 112440.png" alt="mapBackground">
+                    <h3>Match Data</h3>
+                    <h3 id="map-data"></h3> 
+                    <h3 id="score">Score </h3>
+                </section>
+                <section class="page" id="heatmap">
+                    <h3 id="h3hm">Heatmap</h3>
+                    <fieldset id="heatmap-switcher">
+                        <label class="switch">
+                            <input id="kill" type="radio" name="hm" value="killer" checked>
+                            <span>Kills</span>
+                        </label>
+                        <label class="switch">
+                            <input id="death" type="radio" name="hm" value="victim">
+                            <span>Deaths</span>
+                        </label>
+                    </fieldset>
+                    <select class="combobox" name="players" id="hmcombobox">
+                        <option value="default">All Players</option>
+                    </select>
+                    <div id="HC">
+                        <img id="radar" alt="Radarbild der Map">
+                    </div>
+                </section>
+                <section id="killfeed" class="page" hidden>
+                    <h3>Killfeed</h3>
+                </section>
+                <section id="economy" class="page" hidden>
+                    <fieldset id="chart-switcher">
+                        <label class="switch">
+                            <input id="chart-ct-start" type="radio" name="cs" value="CT" checked>
+                            <span>Team 1</span>
+                        </label>
+                        <label class="switch">
+                            <input id="chart-t-start" type="radio" name="cs" value="T">
+                            <span>Team 2</span>
+                        </label>
+                    </fieldset>
+                    <select class="combobox" name="players" id="chartcombobox">
+                        <option value="default">All Players</option>
+                    </select>
+                    <canvas id="chart"></canvas>
+                </section>
+                <section id="stats" class="page" hidden>
+                    <h4>Statistiken</h4>
+                </section>
             </div>
-            <div class="footer">
-                <fieldset id="chart-switcher">
-                    <label class="switch">
-                        <input id="chart-ct-start" type="radio" name="cs" value="CT" checked>
-                        <span>Team 1</span>
-                    </label>
-                    <label class="switch">
-                        <input id="chart-t-start" type="radio" name="cs" value="T">
-                        <span>Team 2</span>
-                    </label>
-                </fieldset>
-                <select class="combobox" name="players" id="chartcombobox">
-                    <option value="default">All Players</option>
-                </select>
-                <canvas id="chart"></canvas>
-            </div>
-        </div>
+        </main>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/heatmap.js/2.0.2/heatmap.min.js"></script>
         <script src="script.js"></script>
