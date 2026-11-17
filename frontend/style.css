@@ -4,6 +4,7 @@
     --font: #dddddd;
     --hover: #353535;
     --container: #181818;
+    --contrast: #86ade7;
 }
 [hidden]{
     display: none !important;
@@ -60,7 +61,7 @@ body {
         "heatmap heatmap heatmap heatmap";
 }
 
-#matchData{
+#match-details{
     grid-area: match;
     display: flex;
     flex-direction: column;
@@ -70,17 +71,16 @@ body {
     isolation: isolate;
     padding: 1px;
     border-radius: 12px;
-    height: 500px;
     background-color: var(--container);
 }
-#matchData::before{
+#match-details::before{
     content: '';
     position: absolute;
     inset: 0;
     z-index: 1;
     background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 50%, var(--container) 100% );
 }
-.bgimg{
+#bgimg{
     position: absolute;
     inset: 0;
     z-index: 0;
@@ -91,8 +91,20 @@ body {
     filter: blur(8px);
     transform: scale(1.08);
 }
-#matchData > h3,
-#matchData > span {
+#match-details > h3 {
+    position: relative;
+    z-index: 2;
+}
+#match-details > span {
+    color: var(--font);
+    font-size: 28px;
+    font-weight: 300;
+    margin-top: 40px;
+    text-align: center;
+    padding: 10px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 10px;
     position: relative;
     z-index: 2;
 }
@@ -186,7 +198,7 @@ fieldset label{
 }
 
 .upload-info {
-    color: #86ade7;
+    color: var(--contrast);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 2px;
@@ -235,8 +247,8 @@ fieldset label{
 #upload-button {
     align-self: flex-start;
     padding: 12px 20px;
-    color: #101010;
-    background: #86ade7;
+    color: var(--bg-main);
+    background: var(--contrast) ;
     border: 0;
     border-radius: 8px;
     font: inherit;
@@ -248,11 +260,6 @@ fieldset label{
     background: #a2c1ed;
 }
 
-#demofile:focus-visible,
-#upload-button:focus-visible {
-    outline: 2px solid #86ade7;
-    outline-offset: 4px;
-}
 #h3hm{
     grid-area: head;
 }

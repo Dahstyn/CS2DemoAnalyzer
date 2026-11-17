@@ -7,6 +7,7 @@ const chartSwitcherRadioButton = document.getElementById("chart-switcher");
 const killfeed = document.getElementById("killfeed");
 let startingTeamCT = [];
 let startingTeamT = [];
+let maxRounds = 0
 let radar = document.getElementById("radar");
 let money = 0;
 let selectedTeamOfChart = "CT";
@@ -41,9 +42,11 @@ function displayMatch (data){
     chartcombobox.value = "default";
     killfeed.replaceChildren();
 
+    const background = document.getElementById("bgimg");
     const mapData = document.getElementById("map-data");
     const mapLogo = document.createElement("img");
     mapLogo.className = ("mapLogo");
+    background.src = (`assets/background/bg_${data.map}.png`)
     mapLogo.src = (`assets/mapLogos/map_icon_${data.map}.png`);
     mapLogo.alt = ("Map Logo");
     mapData.replaceChildren(mapLogo, `${data.map.slice(3)}`);
@@ -69,6 +72,7 @@ function displayMatch (data){
     };
     radar.src = `assets/radar/${data.map}.jpg`;
 
+    maxRounds = data.finalScore.teamStartingCT + data.finalScore.teamStartingT;
     renderKillfeed(data);
 
     showChart();
@@ -91,6 +95,9 @@ function emptyComboboxByTeam(data){
 }
 
 function updateHeatmap(){
+    if(!matchData || radar.naturalHeight === 0 || radar.naturalWidth === 0 || radar.clientHeight === 0 || radar.clientWidth === 0 ){
+        return;
+    }
     if(getActiveRadioButton().value == "victim"){
                 renderDeathHeatmap(matchData, radar, config);
             }else {renderKillHeatmap(matchData, radar, config);}
@@ -168,49 +175,53 @@ function getActiveRadioButton(){
 }
 function renderKillfeed(data){
     let currentRound = 1;
+    killfeed.append(document.createElement("p").textContent = `Runde ${currentRound} beginnt`);
     data.kills.forEach(kill => {
         const killEvent = document.createElement("div");
         const killer = document.createElement("span");
         const weapon = document.createElement("span");
         const victim = document.createElement("span");
-        if (kill.roundNumber !== currentRound){
-            currentRound = kill.roundNumber;
-            const newRound = document.createElement("p");
-            newRound.textContent = `Runde ${currentRound} beginnt`
-            killfeed.append(newRound);
-        }
-        if(kill.haskiller){ 
-            killer.textContent = `${kill.killer.name.slice(0,10)}`;
-        }else{ 
-            killer.textContent = `${kill.victim.name.slice(0,10)}`;
-        }
-        weapon.textContent = `${kill.weapon}`;
-        victim.textContent = `${kill.victim.name.slice(0,10)}`;
-        
-        if(startingTeamCT.find(p => p.id == kill.victim.id)){
-            victim.className = "ct"
-        }else if (startingTeamT.find(p => p.id == kill.victim.id)){
-            victim.className = "t"
-        }
-        if(kill.haskiller){
-            if(startingTeamCT.find(p => p.id == kill.killer.id)){
-                killer.className = "ct"
-            }else if (startingTeamT.find(p => p.id == kill.killer.id)){
-                killer.className = "t"
+        console.log(kill.roundNumber, maxRounds);
+        if (kill.roundNumber <= maxRounds){  
+            if (kill.roundNumber !== currentRound){
+                currentRound = kill.roundNumber;
+                const newRound = document.createElement("p");
+                newRound.textContent = `Runde ${currentRound} beginnt`
+                killfeed.append(newRound);
             }
-        }else{
-            killer.className = victim.className
-        }
+            if(kill.haskiller){ 
+                killer.textContent = `${kill.killer.name.slice(0,10)}`;
+            }else{ 
+                killer.textContent = `${kill.victim.name.slice(0,10)}`;
+            }
+            weapon.textContent = `${kill.weapon}`;
+            victim.textContent = `${kill.victim.name.slice(0,10)}`;
+            
+            if(startingTeamCT.find(p => p.id == kill.victim.id)){
+                victim.className = "ct"
+            }else if (startingTeamT.find(p => p.id == kill.victim.id)){
+                victim.className = "t"
+            }
+            if(kill.haskiller){
+                if(startingTeamCT.find(p => p.id == kill.killer.id)){
+                    killer.className = "ct"
+                }else if (startingTeamT.find(p => p.id == kill.killer.id)){
+                    killer.className = "t"
+                }
+            }else{
+                killer.className = victim.className
+            }
 
-        if(kill.roundNumber >= 13 && kill.roundNumber <= 27){
-            if(killer.className == "ct"){killer.className = "t"}
-            else if(killer.className == "t"){killer.className = "ct"}
+            if(kill.roundNumber >= 13 && kill.roundNumber <= 27){
+                if(killer.className == "ct"){killer.className = "t"}
+                else if(killer.className == "t"){killer.className = "ct"}
 
-            if(victim.className == "ct"){victim.className = "t"}
-            else if(victim.className == "t"){victim.className = "ct"}
+                if(victim.className == "ct"){victim.className = "t"}
+                else if(victim.className == "t"){victim.className = "ct"}
+            }
+            killEvent.append(killer, weapon, victim)
+            killfeed.append(killEvent);
         }
-        killEvent.append(killer, weapon, victim)
-        killfeed.append(killEvent);
     })
 }
 function showChart(){
@@ -324,11 +335,9 @@ uploadButton.addEventListener("click", async () => {
 
         const data = await response.json();
         sessionStorage.setItem("matchData", JSON.stringify(data));
+
+        showPage("heatmap");
         displayMatch(data);
-        container.hidden = false;
-        upload.hidden = true;
-        newDemo.hidden = false; 
-        navbar.hidden = false;
     } catch (error) {
         console.error(error);
         alert("Die Datei konnte nicht hochgeladen werden.");
@@ -339,22 +348,31 @@ uploadButton.addEventListener("click", async () => {
 });
 
 const savedMatchData = sessionStorage.getItem("matchData");
+const savedPage = sessionStorage.getItem("activePage");
 if(savedMatchData !== null){
-    displayMatch(JSON.parse(savedMatchData))
-}
+    showPage(savedPage ?? "heatmap");
+    displayMatch(JSON.parse(savedMatchData));
+}else{showPage("upload")}
 
 newDemo.addEventListener('click', (event) => {
-    showPage("heatmap")
-    container.hidden = true;
-    upload.hidden = false;
-    newDemo.hidden = true;
-    navbar.hidden = true
+    showPage("upload");
 })
 
 function showPage(id){
+    const isUpload = id === "upload";
+    upload.hidden = !isUpload;
+    container.hidden = isUpload;
+    newDemo.hidden = isUpload;
+    navbar.hidden = isUpload;
+
+    
     document.querySelectorAll(".page").forEach(page => {
         page.hidden = page.id !== id;
     });
+    if(id === "heatmap"){
+        updateHeatmap();
+    }
+    sessionStorage.setItem("activePage", id);
 }
 navbar.addEventListener('click', event => {
     const button = event.target.closest("button[data-page]");
