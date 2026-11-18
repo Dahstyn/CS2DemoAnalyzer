@@ -39,6 +39,29 @@ body {
     font-size: 22px;
     font-weight: 600;
 }
+
+#navbar{
+    position: sticky;
+    top: 64px;
+    z-index: 99;
+    background-color: var(--bg-main);
+}
+#navbar button{
+    padding: 20px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--font);
+    cursor: pointer;
+}
+#navbar button:hover,
+#navbar button.active{
+    color: var(--contrast);
+}
+#navbar button.active{
+    border-bottom-color: var(--contrast);
+}
+
 .container{
     display: grid;
     grid-template-columns: 1fr 3fr;
@@ -390,6 +413,27 @@ h3{
 #economy canvas{
     grid-area: chart;
 }
+#stats > table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+#stats > table th,
+#stats > table td{
+    padding: 14px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+#stats > table th:first-child,
+#stats > table td:first-child{
+    text-align: left;
+    width: 18%; 
+    overflow-wrap: anywhere;
+}
+
+
+
+
 
 .loader {
     margin: 30px auto 0;

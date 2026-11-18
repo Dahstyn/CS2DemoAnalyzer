@@ -29,9 +29,7 @@ let config = {
     }
 };
 
-function displayMatch (data){
-    matchData = data;
-    //aufräumen alter Daten aus vorherigen Uploads
+function cleanUp(){
     startingTeamCT = [];
     startingTeamT = [];
     hmcombobox.querySelectorAll('option:not([value="default"])').forEach(option => option.remove());
@@ -41,7 +39,11 @@ function displayMatch (data){
     hmcombobox.value = "default";
     chartcombobox.value = "default";
     killfeed.replaceChildren();
-
+}
+function displayMatch (data){
+    cleanUp();
+    matchData = data;
+  
     const background = document.getElementById("bgimg");
     const mapData = document.getElementById("map-data");
     const mapLogo = document.createElement("img");
@@ -76,6 +78,7 @@ function displayMatch (data){
     renderKillfeed(data);
 
     showChart();
+    displayStats(data);
 }
 function fillComboboxByTeam(data){
     if (selectedTeamOfChart === "CT" || selectedTeamOfChart === "T"){
@@ -181,7 +184,6 @@ function renderKillfeed(data){
         const killer = document.createElement("span");
         const weapon = document.createElement("span");
         const victim = document.createElement("span");
-        console.log(kill.roundNumber, maxRounds);
         if (kill.roundNumber <= maxRounds){  
             if (kill.roundNumber !== currentRound){
                 currentRound = kill.roundNumber;
@@ -255,7 +257,37 @@ function showChart(){
         }
     })
 }
+function displayStats(data){
+    const t1body = document.querySelector("#table-team1 tbody");
+    const t2body = document.querySelector("#table-team2 tbody");
+    if(t1body != null){
+        t1body.replaceChildren();
+    }
+    if(t2body != null){
+        t2body.replaceChildren();
+    }
 
+    data.players.filter(player => player.startingteam === "CT").forEach(player => {
+        const row = t1body.insertRow();
+
+        [player.name.slice(0,10), player.stats.kills, player.stats.assists, player.stats.deaths, player.stats.damage, player.stats.udDamage, player.stats.mvps, player.stats.adr, player.stats.kd, player.stats.hsPercentage]
+        .forEach(value => {
+            const cell = row.insertCell();
+        cell.textContent = value;
+        })
+    })
+    data.players.filter(player => player.startingteam === "T").forEach(player => {
+        const row = t2body.insertRow();
+
+        [player.name.slice(0,10), player.stats.kills, player.stats.assists, player.stats.deaths, player.stats.damage, player.stats.udDamage, player.stats.mvps, player.stats.adr, player.stats.kd, player.stats.hsPercentage]
+        .forEach(value => {
+            const cell = row.insertCell();
+        cell.textContent = value;
+        })
+    })
+    
+
+}
 
 window.addEventListener("resize", () =>{
     
@@ -365,7 +397,10 @@ function showPage(id){
     newDemo.hidden = isUpload;
     navbar.hidden = isUpload;
 
-    
+    document.querySelectorAll("#navbar button").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === id);
+    })
+
     document.querySelectorAll(".page").forEach(page => {
         page.hidden = page.id !== id;
     });

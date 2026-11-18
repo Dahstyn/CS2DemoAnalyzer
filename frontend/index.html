@@ -24,13 +24,10 @@
             </div>
             <nav id="navbar" hidden>
                 <button data-page="stats">Statistiken</button>
-                <button data-page="heatmap">Heatmap</button>                
+                <button data-page="heatmap" class="active">Heatmap</button>                
                 <button data-page="killfeed">Killfeed</button>
                 <button data-page="economy">Geldübersicht</button>
             </nav>
-            <div>
-                <button id="new-demo" hidden>Neue Analyse starten</button>
-            </div>
             <div class="container" hidden>
                 <section id="match-details">
                     <img id="bgimg" src="" alt="">
@@ -77,8 +74,45 @@
                     <canvas id="chart"></canvas>
                 </section>
                 <section id="stats" class="page" hidden>
-                    <h4>Statistiken</h4>
+                    <h3>Statistiken</h3>
+                    <table id="table-team1">
+                        <thead>
+                            <tr>
+                                <th>Team 1</th>
+                                <th>Kills</th>
+                                <th>Asissts</th>
+                                <th>Deaths</th>
+                                <th>Damage</th>
+                                <th>Utility Damage</th>
+                                <th>MVPs</th>
+                                <th>ADR</th>
+                                <th>K/D</th>
+                                <th>HS%</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <table id="table-team2">
+                        <thead>
+                            <tr>
+                                <th>Team 2</th>
+                                <th>Kills</th>
+                                <th>Asissts</th>
+                                <th>Tode</th>
+                                <th>Damage</th>
+                                <th>Utility Damage</th>
+                                <th>MVPs</th>
+                                <th>ADR</th>
+                                <th>K/D</th>
+                                <th>HS%</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </section>
+            </div>
+            <div>
+                <button id="new-demo" hidden>Neue Analyse starten</button>
             </div>
         </main>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
