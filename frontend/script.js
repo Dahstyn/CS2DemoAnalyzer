@@ -137,11 +137,14 @@ function calcRad(radar){
     return Math.max(5, Math.round(radar.clientWidth * 0.02));
 }
 function createKillPoints(data, radar){
+    const maxRounds = data.finalScore.teamStartingCT + data.finalScore.teamStartingT;
     const pId = hmcombobox.value;
     const scaleX = radar.clientWidth / radar.naturalWidth;
     const scaleY = radar.clientHeight / radar.naturalHeight;
 
     return data.kills
+        .filter(kill => kill.roundNumber <= maxRounds)
+        .filter(kill => kill.haskiller && kill.killer.id !== kill.victim.id)
         .filter(kill => pId === "default" || kill.killer.id == pId)
         .map(kill => ({
             x: Math.round(kill.kposition.x * scaleX),
@@ -151,11 +154,14 @@ function createKillPoints(data, radar){
 }
 
 function createDeathPoints(data, radar){
+    const maxRounds = data.finalScore.teamStartingCT + data.finalScore.teamStartingT;
     const pId = hmcombobox.value;
     const scaleX = radar.clientWidth / radar.naturalWidth;
     const scaleY = radar.clientHeight / radar.naturalHeight;
 
-    return data.kills.filter(kill => pId === "default" || kill.victim.id == pId).map(kill => ({
+    return data.kills
+        .filter(kill => kill.roundNumber <= maxRounds)
+        .filter(kill => pId === "default" || kill.victim.id == pId).map(kill => ({
         x: Math.round(kill.vposition.x * scaleX),
         y: Math.round(kill.vposition.y * scaleY),
         value: 1
