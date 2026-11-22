@@ -21,7 +21,7 @@ func addStartingTeam(round dto.Round, players []dto.Player) {
 		}
 	}
 }
-func updatePlayerStats(players []dto.Player, participants []*common.Player, roundNumber int, headshotkills [10]int) {
+func updatePlayerStats(players []dto.Player, participants []*common.Player, roundNumber int, headshotkills map[int]int) {
 	for _, p := range participants {
 		for i := range players {
 			if p != nil && p.Entity != nil {
@@ -55,7 +55,7 @@ func updatePlayerStats(players []dto.Player, participants []*common.Player, roun
 	}
 }
 
-func parse(demoPath string) dto.MatchData {
+func parse(demoPath string) (dto.MatchData, error) {
 	var matchData dto.MatchData
 	var finalScore dto.Score
 	var halftimeScore dto.Score
@@ -65,9 +65,11 @@ func parse(demoPath string) dto.MatchData {
 	var players []dto.Player
 	var rounds []dto.Round
 	var roundNumber int = 0
-	var headshotKills [10]int
+	headshotKills := make(map[int]int)
 	file, err1 := os.Open(demoPath)
-	checkError(err1)
+	if err1 != nil {
+		return dto.MatchData{}, err1
+	}
 	defer file.Close()
 
 	parser := demoinfocs.NewParser(file)
@@ -145,7 +147,9 @@ func parse(demoPath string) dto.MatchData {
 
 	})
 	err1 = parser.ParseToEnd()
-	checkError(err1)
+	if err1 != nil {
+		return dto.MatchData{}, err1
+	}
 
 	ctScore := parser.GameState().TeamCounterTerrorists().Score()
 	tScore := parser.GameState().TeamTerrorists().Score()
@@ -159,5 +163,5 @@ func parse(demoPath string) dto.MatchData {
 		Rounds:        rounds,
 	}
 
-	return matchData
+	return matchData, nil
 }

@@ -39,7 +39,11 @@ func handleUpload(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Datei konnte nicht gespeichert werden", http.StatusInternalServerError)
 		return
 	}
-	parsedMatchData = parse(targetFile.Name())
+	parsedMatchData, err := parse(targetFile.Name())
+	if err != nil {
+		http.Error(w, "Die Demo konnte nicht verarbeitet werden", http.StatusUnprocessableEntity)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(parsedMatchData)
