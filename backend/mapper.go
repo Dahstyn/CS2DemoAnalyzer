@@ -48,7 +48,7 @@ func mapRoundStart(roundNumber int) dto.Round {
 	}
 }
 func mapScore(ctScore int, tScore int) dto.Score {
-	if ctScore+tScore < 13 {
+	if ctScore+tScore < 13 || ctScore+tScore > 24 {
 		return dto.Score{
 			TeamStartingCT: ctScore,
 			TeamStartingT:  tScore,

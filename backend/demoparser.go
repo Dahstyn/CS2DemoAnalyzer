@@ -64,7 +64,7 @@ func parse(demoPath string) dto.MatchData {
 	var kills []dto.Kill
 	var players []dto.Player
 	var rounds []dto.Round
-	var roundNumber int = 0 // Durch parser.GameState().TotalRoundsPlayed() ersetzen
+	var roundNumber int = 0
 	var headshotKills [10]int
 	file, err1 := os.Open(demoPath)
 	checkError(err1)
@@ -79,28 +79,35 @@ func parse(demoPath string) dto.MatchData {
 		mapName = message.GetMapName()
 	})
 	parser.RegisterEventHandler(func(event events.Kill) {
-		if event.Killer != nil && event.IsHeadshot {
-			headshotKills[event.Killer.UserID]++
-
+		if event.Victim == nil {
+			return
 		}
-		xk, yk := mapMetadata.TranslateScale(event.Killer.Position().X, event.Killer.Position().Y)
+
 		xv, yv := mapMetadata.TranslateScale(event.Victim.Position().X, event.Victim.Position().Y)
 
 		kill := dto.Kill{
-			HasKiller: event.Killer != nil,
-			Killer:    mapPlayer(event.Killer),
+			HasKiller: event.Killer != nil && event.Victim != event.Killer,
 			Victim:    mapPlayer(event.Victim),
-			KillerPosition: dto.Pos{
-				X: xk,
-				Y: yk,
-			},
 			VictimPosition: dto.Pos{
 				X: xv,
 				Y: yv,
 			},
 			Weapon:      event.Weapon.String(),
-			RoundNumber: parser.GameState().TotalRoundsPlayed() + 1,
+			RoundNumber: roundNumber,
 		}
+		if kill.HasKiller {
+			kill.Killer = mapPlayer(event.Killer)
+
+			xk, yk := mapMetadata.TranslateScale(event.Killer.Position().X, event.Killer.Position().Y)
+			kill.KillerPosition = dto.Pos{
+				X: xk,
+				Y: yk,
+			}
+			if event.IsHeadshot {
+				headshotKills[event.Killer.UserID]++
+			}
+		}
+
 		kills = append(kills, kill)
 	})
 
@@ -110,8 +117,6 @@ func parse(demoPath string) dto.MatchData {
 	})
 
 	parser.RegisterEventHandler(func(rs events.RoundStart) {
-		//Durch parser.GameState().TotalRoundsPlayed() ersetzen
-
 		roundNumber++
 		if roundNumber == 13 {
 			ctHalftimeScore := parser.GameState().TeamCounterTerrorists().Score()
@@ -136,8 +141,7 @@ func parse(demoPath string) dto.MatchData {
 	})
 
 	parser.RegisterEventHandler(func(e events.AnnouncementWinPanelMatch) {
-		roundNr := parser.GameState().TotalRoundsPlayed() + 1
-		updatePlayerStats(players, parser.GameState().Participants().All(), roundNr, headshotKills)
+		updatePlayerStats(players, parser.GameState().Participants().All(), parser.GameState().TotalRoundsPlayed(), headshotKills)
 
 	})
 	err1 = parser.ParseToEnd()
