@@ -80,13 +80,13 @@ body {
    grid-template-columns: 0.3fr 0.8fr 0.3fr;
    grid-template-rows: auto auto 1fr;
    grid-template-areas: 
-        "head head head"
+        "head . ."
         "radio . combo"
         "heatmap heatmap heatmap";
 
-    max-width: 590px;
+    max-width: 650px;
     margin: 0 auto;
-    background-color:var(--bg-main) ;
+    background-color:var(--container) ;
     position: relative;
 }
 
@@ -349,6 +349,7 @@ h1 {
 }
 h3{
     display: inline-block;
+    width: fit-content;
     color: var(--font);
     font-size: 28px;
     text-align: center;
@@ -396,11 +397,15 @@ h3{
    color: #e6b66e;
 }
 
+#h3-money{
+    grid-area: hecon;
+}
 #economy{
     display: grid; 
     grid-template-columns: 0.1fr 0.1fr auto auto;
-    grid-template-rows: 0.1fr auto;
-    grid-template-areas: 
+    grid-template-rows: 0.3fr 0.1fr auto;
+    grid-template-areas:
+        "hecon . . ." 
         "switch switch switch combo"
         "chart chart chart chart";
 }

@@ -26,7 +26,7 @@ function displayMatch (data){
     emptyComboboxByTeam();
     hmcombobox.value = "default";
     chartcombobox.value = "default";
-    killfeed.replaceChildren();
+    killfeed.replaceChildren(killfeed.querySelector("h3"));
 
     const startingTeamCT = [];
     const startingTeamT = [];
