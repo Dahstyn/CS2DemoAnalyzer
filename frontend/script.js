@@ -190,7 +190,7 @@ function renderKillfeed(data, startingTeamCT, startingTeamT){
             if(kill.haskiller){ 
                 killer.textContent = `${kill.killer.name.slice(0,10)}`;
             }else{ 
-                killer.textContent = `${kill.victim.name.slice(0,10)}`;
+                killer.textContent = ``;
             }
             weapon.textContent = `${kill.weapon}`;
             victim.textContent = `${kill.victim.name.slice(0,10)}`;
