@@ -250,7 +250,7 @@ function showChart(data, team){
         data: {
             labels: labels,
             datasets: [{
-                label: "Money at the start of every round",
+                label: "Geld zu Rundenbeginn",
                 data: money
             }]
 
@@ -267,7 +267,9 @@ function displayStats(data){
         t2body.replaceChildren();
     }
 
-    data.players.filter(player => player.startingteam === "CT").forEach(player => {
+    data.players.filter(player => player.startingteam === "CT")
+        .sort((a, b) => b.stats.damage - a.stats.damage)
+        .forEach(player => {
         const row = t1body.insertRow();
 
         [player.name.slice(0,10), player.stats.kills, player.stats.assists, player.stats.deaths, player.stats.damage, player.stats.udDamage, player.stats.mvps, (Math.round(player.stats.adr * 100)/100), (Math.round(player.stats.kd * 100)/100), (Math.round(player.stats.hsPercentage * 100)/100)]
@@ -276,7 +278,9 @@ function displayStats(data){
         cell.textContent = value;
         })
     })
-    data.players.filter(player => player.startingteam === "T").forEach(player => {
+    data.players.filter(player => player.startingteam === "T")
+        .sort((a, b) => b.stats.damage - a.stats.damage)
+        .forEach(player => {
         const row = t2body.insertRow();
 
         [player.name.slice(0,10), player.stats.kills, player.stats.assists, player.stats.deaths, player.stats.damage, player.stats.udDamage, player.stats.mvps, (Math.round(player.stats.adr * 100)/100), (Math.round(player.stats.kd * 100)/100), (Math.round(player.stats.hsPercentage * 100)/100)]
